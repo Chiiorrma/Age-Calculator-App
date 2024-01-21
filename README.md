@@ -24,7 +24,7 @@ Welcome to the Age Calculator App repository! This simple app, built with HTML, 
 
 ## Demo
 
-Check out the live demo of the Age Calculator App [here](#).
+Check out the live demo of the Age Calculator App [https://friedaodagboyi.github.io/Age-Calculator-App/](#Here)
 
 ## Getting Started
 
