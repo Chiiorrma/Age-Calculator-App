@@ -18,6 +18,11 @@ let isValid = false
 
 submitBtn.addEventListener('click', calculateAge)
 
+// Check and display saved age on page load
+window.addEventListener('load', function () {
+  displaySavedAge();
+});
+
 inputDay.addEventListener('input', e => {
   if (inputDay.value > 31) {
     errorDay.innerHTML = "Must be a valid date";
@@ -98,6 +103,33 @@ inputYear.addEventListener('input', e => {
   }
 });
 
+inputDay.addEventListener('input', validateInput);
+inputMonth.addEventListener('input', validateInput);
+inputYear.addEventListener('input', validateInput);
+
+function validateInput(e) {
+  const inputElement = e.target;
+  const errorElement = inputElement.nextElementSibling;
+  const inputValue = +inputElement.value;
+
+  if (inputValue === 0) {
+    isValid = false;
+    errorElement.innerHTML = "This field is required";
+  } else if (inputElement.id === 'day' && (inputValue < 1 || inputValue > 31)) {
+    isValid = false;
+    errorElement.innerHTML = "Must be a valid date";
+  } else if (inputElement.id === 'month' && (inputValue < 1 || inputValue > 12)) {
+    isValid = false;
+    errorElement.innerHTML = "Must be a valid month";
+  } else if (inputElement.id === 'year' && (inputValue < 1900 || inputValue > new Date().getFullYear())) {
+    isValid = false;
+    errorElement.innerHTML = "Must be a valid year";
+  } else {
+    isValid = true;
+    errorElement.innerHTML = "";
+  }
+}
+
 function calculateAge() {
   if (isValid) {
     let birthday = `${inputDay.value}/${inputMonth.value}/${inputYear.value}`;
@@ -111,8 +143,64 @@ function calculateAge() {
     outputDay.innerHTML = ageDay;
     outputMonth.innerHTML = ageMonth;
     outputYear.innerHTML = ageYears;
+
+    outputDay.innerHTML = ageDay;
+    outputMonth.innerHTML = ageMonth;
+    outputYear.innerHTML = ageYears;
+
+    // Save age in local storage
+    saveAgeToLocal({
+      years: ageYears,
+      months: ageMonth,
+      days: ageDay
+    });
   } else {
-    alert("error")
+    alert("Error: Please fix the input values");
   }
 }
 
+
+// Function to save age in local storage
+function saveAgeToLocal(ageObj) {
+  localStorage.setItem('savedAge', JSON.stringify(ageObj));
+}
+
+// Function to display saved age from local storage
+function displaySavedAge() {
+  const savedAgeJSON = localStorage.getItem('savedAge');
+  if (savedAgeJSON) {
+    const savedAge = JSON.parse(savedAgeJSON);
+    outputDay.innerHTML = savedAge.days;
+    outputMonth.innerHTML = savedAge.months;
+    outputYear.innerHTML = savedAge.years;
+  }
+}
+
+// Add theme toggle functionality
+const themeToggle = document.getElementById("theme-toggle");
+const iconMoon = document.querySelector(".icon-moon");
+const iconSun = document.querySelector(".icon-sun");
+
+// Function to update the icon based on the current mode
+function updateIcon(isDarkMode) {
+  if (isDarkMode) {
+    iconSun.style.display = "flex";
+    iconMoon.style.display = "none";
+  } else {
+    iconSun.style.display = "none";
+    iconMoon.style.display = "flex";
+  }
+}
+
+const isDarkMode = localStorage.getItem("theme") === "dark";
+updateIcon(isDarkMode);
+
+themeToggle.addEventListener("click", () => {
+  const isCurrentlyDark = document.body.classList.contains("dark-mode");
+  document.body.classList.toggle("dark-mode");
+  themeToggle.classList.toggle("active", !isCurrentlyDark);
+  localStorage.setItem("theme", isCurrentlyDark ? "light" : "dark");
+
+  // Update the icon after toggling the theme
+  updateIcon(!isCurrentlyDark);
+})
